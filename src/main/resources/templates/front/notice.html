@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>系统消息</title>
+	<!--公共css与js文件-->
+	<th:block th:include="front/common/common_resource::resources"/>
+	<script th:src="@{js/front/user_notice.js}"></script>
+	<script th:src="@{/js/pagetool.js}"></script>
+</head>
+
+<body>
+<th:block th:include="front/common/header::nav"/>
+
+<div class="grid_3">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="breadcrumb1">
+					<ul>
+						<a href="index.html"><i class="fa fa-envelope-o home_1"></i></a>
+						<span class="divider">&nbsp;|&nbsp;</span>
+						<li class="current-page">系统通知：</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<!--左侧消息列表-->
+			<div class="col-md-9">
+				<div class="careMessage">
+					<div class="row">
+						<ul class="nav nav-pills">
+							<li id="read_notice" role="presentation"  class="active"><a id="read_notice_a"  style="cursor: pointer">已读</a></li>
+							<li id="un_read_notice" role="presentation"><a id="un_read_notice_a" style="cursor: pointer">未读([[${noticeCount}]])</a></li>
+						</ul>
+					</div>
+					<hr/>
+					<div class="row">
+						<div id="notice_div" class="list-group" style="margin: 0 20px 0 0">
+
+						</div>
+					</div>
+					<div id="pagetool">
+						<ul class="pagination">
+							<li class="head"><a href="#">首页</a></li>
+							<li class="lastpage"><a href="#"><i class="fa fa-angle-left"></i></a></li>
+							<li class="disabled morehead"><a>...</a></li>
+							<li class="page-4"><a></a></li>
+							<li class="page-3"><a></a></li>
+							<li class="page-2"><a></a></li>
+							<li class="page-1"><a></a></li>
+							<li class="currentpage active"><a>1</a></li>
+							<li class="page_1"><a></a></li>
+							<li class="page_2"><a></a></li>
+							<li class="page_3"><a></a></li>
+							<li class="page_4"><a></a></li>
+							<li class="disabled moretail"><a>...</a></li>
+							<li class="nextpage"><a href="#"><i class="fa fa-angle-right"></i></a></li>
+							<li class="tail"><a href="#">尾页</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!--右侧导航栏-->
+			<div class="col-md-3 col_5">
+				<div class="center-middle" style="background-color: white">
+					<a th:href="@{'/profile/'+${session.user.id}}"><img th:src="@{/file(path=${session.user.photo})}" class="pub-msg-img"/>
+						<p th:text="${session.user.nickname}"></p></a>
+					<p th:inline="text">ID:&nbsp;[[${session.user.id}]]</p>
+				</div>
+				<!--消息菜单栏-->
+				<ul class="match_box message">
+					<a th:href="@{/letter}"><li><i class="fa fa-comments-o"></i> 私信<span id="letter-count" th:inline="text">([[${letterCount}]])</span></li></a>
+					<a th:href="@{/follow}"><li><i class="fa fa-heart"></i> 关注<span id="follow-count">([[${followCount}]])</span></li></a>
+					<a th:href="@{/visit_trace}"><li><i class="fa fa-eye"></i> 访问记录<span id="record-count">([[${visitTraceCount}]])</span></li></a>
+					<a th:href="@{/notice}"><li><i class="fa fa-envelope-o"></i> 系统通知<span id="notice-count">([[${noticeCount}]])</span></li></a>
+				</ul>
+				<!--广告栏-->
+				<ul class="match_box">
+					<li><h4>新人抢先看</h4></li>
+					<hr/>
+					<div th:each="user:${users}">
+						<li>
+							<div
+									class="jobs-item with-thumb">
+								<div class="thumb_top">
+									<div class="thumb">
+										<a th:href="@{'/profile/'+${user.id}}">
+											<img th:src="@{/file(path=${user.photo})}" style="width:70px; height:70px;margin-left: 10px" class="img-responsive" alt=""/>
+										</a>
+									</div>
+									<div class="jobs_right">
+										<h5 th:text="${user.nickname}">之夏</h5>
+										<p>[[${user.age}]]岁&nbsp;[[${user.education}]]</p>
+										<span>注册时间：</span><span th:text="${#dates.format(user.regTime, 'yyyy-MM-dd')}"></span>
+									</div>
+								</div>
+							</div>
+						</li>
+						<hr/>
+					</div>
+					<li><a th:href="@{/search}" class="photo_view center-block "
+						   style="color: white;text-align: center">想查看更多吗</a></li>
+				</ul>
+
+				<div class="clearfix"></div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+
+	</div>
+</div>
+<div id="notice-model" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 id="notice-title" class="modal-title">Modal title</h4>
+			</div>
+			<div class="modal-body">
+				<p id="notice-content">One fine body&hellip;</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+
+</body>
+</html>	

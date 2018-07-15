@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hpe.findlover.mapper.NoticeMapper" >
+  <resultMap id="BaseResultMap" type="com.hpe.findlover.model.Notice" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="pub_time" property="pubTime" jdbcType="TIMESTAMP" />
+    <result column="pub_obj" property="pubObj" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, admin_id, title, content, pub_time, pub_obj
+  </sql>
+  
+  <select id="selectAllByIdentity" resultType="Notice">
+    SELECT * FROM findlover.notice
+    WHERE ${column} LIKE #{keyword}
+    <if test="identity == 'vip'">
+      AND pub_obj=1
+    </if>
+    <if test="identity == 'star'">
+      AND pub_obj=2
+    </if>
+  </select>
+  
+  <select id="selectUnReadNotice" resultType="Notice">
+    SELECT notice.* FROM findlover.notice
+    <where>
+      ( pub_obj = 0
+      <if test="vip">
+       or pub_obj = 1
+      </if>
+      <if test="star">
+        or pub_obj = 2
+      </if>
+      OR pub_obj=#{id})
+      AND id NOT IN (SELECT notice_id FROM notice_user WHERE user_id=#{id})
+    </where>
+  </select>
+
+  <select id="selectReadNotice" resultType="Notice">
+    SELECT notice.* FROM findlover.notice
+    <where>
+      ( pub_obj = 0
+      <if test="vip">
+        or pub_obj = 1
+      </if>
+      <if test="star">
+        or pub_obj = 2
+      </if>
+      OR pub_obj=#{id})
+      AND id IN (SELECT notice_id FROM notice_user WHERE user_id=#{id})
+    </where>
+  </select>
+</mapper>

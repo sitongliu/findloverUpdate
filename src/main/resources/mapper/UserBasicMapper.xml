@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hpe.findlover.mapper.UserBasicMapper">
+    <!--<resultMap id="BaseResultMap" type="UserBasic" >-->
+    <!--&lt;!&ndash;-->
+    <!--WARNING - @mbg.generated-->
+    <!--&ndash;&gt;-->
+    <!--<id column="id" property="id" jdbcType="INTEGER" />-->
+    <!--<result column="email" property="email" jdbcType="VARCHAR" />-->
+    <!--<result column="password" property="password" jdbcType="VARCHAR" />-->
+    <!--<result column="nickname" property="nickname" jdbcType="VARCHAR" />-->
+    <!--<result column="tel" property="tel" jdbcType="VARCHAR" />-->
+    <!--<result column="sex" property="sex" jdbcType="CHAR" />-->
+    <!--<result column="birthday" property="birthday" jdbcType="DATE" />-->
+    <!--<result column="photo" property="photo" jdbcType="VARCHAR" />-->
+    <!--<result column="marry_status" property="marryStatus" jdbcType="VARCHAR" />-->
+    <!--<result column="height" property="height" jdbcType="INTEGER" />-->
+    <!--<result column="sexual" property="sexual" jdbcType="CHAR" />-->
+    <!--<result column="education" property="education" jdbcType="VARCHAR" />-->
+    <!--<result column="workplace" property="workplace" jdbcType="VARCHAR" />-->
+    <!--<result column="salary" property="salary" jdbcType="DOUBLE" />-->
+    <!--<result column="live_condition" property="liveCondition" jdbcType="INTEGER" />-->
+    <!--<result column="authority" property="authority" jdbcType="INTEGER" />-->
+    <!--<result column="status" property="status" jdbcType="INTEGER" />-->
+    <!--<result column="code" property="code" jdbcType="VARCHAR" />-->
+    <!--<result column="reg_time" property="regTime" jdbcType="TIMESTAMP" />-->
+    <!--</resultMap>-->
+
+    <resultMap id="userSearch" type="userBasic">
+        <id column="userId" property="id" jdbcType="INTEGER" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="photo" property="photo" jdbcType="VARCHAR" />
+        <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+        <result column="marry_status" property="marryStatus" jdbcType="VARCHAR" />
+        <result column="height" property="height" jdbcType="INTEGER" />
+        <result column="workplace" property="workplace" jdbcType="VARCHAR" />
+        <result column="point" property="point" jdbcType="VARCHAR" />
+        <result column="age" property="age"/>
+        <result column="sex" property="sex"/>
+        <result column="salary" property="salary"/>
+        <!--用户详细信息-->
+        <result column="signature" property="userDetail.signature"/>
+        <!--用户资产信息-->
+        <result column="vip_deadline" property="userAsset.vipDeadline"/>
+        <result column="star_deadline" property="userAsset.starDeadline"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, email, password, nickname, tel, sex, birthday, photo, marry_status, height, sexual,
+        education, workplace, salary, live_condition, authority, status, code, reg_time,point
+    </sql>
+
+    <select id="selectByEmail" resultType="UserBasic">
+        SELECT
+        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>
+        FROM user_basic
+        WHERE email=#{email}
+    </select>
+
+    <select id="selectAllByIdentity" resultType="UserBasic">
+        SELECT ub.id,ub.email,ub.nickname,ub.tel,ub.photo,ub.status
+        FROM user_basic AS ub LEFT OUTER JOIN user_asset AS ua
+        ON ub.id=ua.id
+        WHERE ub.${column} LIKE #{keyword}
+        <if test="identity == 'vip'">
+            AND ua.vip_deadline>=now()
+        </if>
+        <if test="identity == 'star'">
+            AND ua.star_deadline>=now()
+        </if>
+    </select>
+
+    <select id="selectStarUser" resultType="UserBasic">
+        SELECT ub.*
+        from user_basic as ub LEFT OUTER JOIN user_asset as ua
+        ON ub.id=ua.id
+        WHERE
+        DATE(ua.star_deadline)>now()
+        <if test="sex!=null">
+            AND ub.sex=#{sex}
+        </if>
+        <if test="workProvince!=null">
+            AND ub.workplace LIKE #{workProvince}
+        </if>
+        AND ub.authority =1
+        AND ub.id!=#{id}
+    </select>
+
+    <select id="selectUsersByIds" resultMap="userSearch">
+        SELECT height,user_basic.id userId,user_basic.sex,nickname,photo,workplace,birthday,marry_status,
+        signature,
+        vip_deadline,star_deadline
+        FROM user_basic
+        LEFT OUTER JOIN user_detail ON user_detail.id=user_basic.id
+        LEFT OUTER JOIN user_asset  ON  user_basic.id=user_asset.id
+        WHERE
+        authority =1
+        AND user_basic.id IN
+        <foreach collection="array" open="("
+                 separator="," close=")" item="val">
+            #{val}
+        </foreach>
+    </select>
+    
+    <select id="selectUserBySexualAndWorkProvince" resultMap="userSearch">
+        SELECT height,user_basic.id userId,user_basic.sex,nickname,photo,workplace,birthday,marry_status,salary,
+        YEAR(NOW())-YEAR(birthday) age,
+        signature,
+        vip_deadline,star_deadline
+        FROM user_basic
+        LEFT OUTER JOIN user_life ON user_basic.id=user_life.id
+        LEFT OUTER JOIN user_detail ON user_detail.id=user_basic.id
+        LEFT OUTER JOIN user_asset  ON user_basic.id=user_asset.id
+        <where>
+            sex = #{sexual}
+            AND authority =1
+            <if test="workProvince !=null">
+                AND workplace like '%${workProvince}%'
+            </if>
+            AND user_basic.id != #{id}
+        </where>
+    </select>
+
+
+    <select id="selectUserByUserPick" resultMap="userSearch" >
+        SELECT height,user_basic.id userId,user_basic.sex,nickname,photo,workplace,birthday,marry_status,salary,birthday,
+        YEAR(NOW())-YEAR(birthday) age,
+        signature,
+        vip_deadline,star_deadline
+        FROM user_basic
+        LEFT OUTER JOIN user_life ON user_basic.id=user_life.id
+        LEFT OUTER JOIN user_detail ON user_detail.id=user_basic.id
+        LEFT OUTER JOIN user_asset  ON user_basic.id=user_asset.id
+        <where>
+            user_basic.id != #{id}
+            AND authority =1
+            <if test="sex != null">
+              AND  sex=#{sex}
+            </if>
+            <if test="workplace !=null and workplace !='-1'">
+                AND workplace LIKE #{workplace}
+            </if>
+            <if test="workProvince !=null and workProvince !='-1'">
+                AND workplace LIKE '%${workProvince}%'
+            </if>
+            <if test="workCity !=null and workCity !='-1'">
+                AND workplace LIKE '%${workCity}%'
+            </if>
+            <if test="heightLow != null and heightLow !='-1'">
+                AND height >= #{heightLow}
+            </if>
+            <if test="heightHigh !=null and heightHigh !='-1'">
+                AND  height &lt;=  #{heightHigh}
+            </if>
+            <if test="job != null and job !='-1'">
+                AND job LIKE #{job}
+            </if>
+
+            <if test="marryStatus !=null and marryStatus !='-1'">
+                AND marry_status LIKE #{marryStatus}
+            </if>
+            <if test="salaryLow !=null and salaryLow !='-1' ">
+                AND salary >= #{salaryLow}
+            </if>
+            <if test=" salaryHigh !=null and salaryHigh !='-1'">
+                AND salary &lt;= #{salaryHigh}
+            </if>
+            <!--以下为VIP的搜索条件-->
+            <if test="education != null and education !='-1'">
+                AND education LIKE #{education}
+            </if>
+            <if test="birthplace != null and birthplace !='-1'">
+                AND birthplace LIKE #{birthplace}
+            </if>
+            <if test="ageLow != null and ageLow !='-1'">
+                AND YEAR(NOW())-YEAR(birthday) >= #{ageLow}
+            </if>
+            <if test="ageLow == null">
+                AND YEAR(NOW())-YEAR(birthday) >= 18
+            </if>
+            <if test="ageHigh != null and ageHigh !='-1'">
+                AND YEAR(NOW())-YEAR(birthday) &lt;= #{ageHigh}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="selectUserBySearch" resultMap="userSearch">
+        SELECT height,user_basic.id userId,user_basic.sex,nickname,photo,workplace,birthday,marry_status,salary,birthday,
+        YEAR(NOW())-YEAR(birthday) age,
+        signature,
+        vip_deadline,star_deadline
+        FROM user_basic
+        LEFT OUTER JOIN user_life ON user_basic.id=user_life.id
+        LEFT OUTER JOIN user_detail ON user_detail.id=user_basic.id
+        LEFT OUTER JOIN user_asset  ON user_basic.id=user_asset.id
+        <where>
+            user_basic.id != #{id}
+            AND authority =1
+            <if test="sex != null">
+              AND sex=#{sex}
+            </if>
+            <if test="workProvince !=null and workProvince !='-1'">
+                AND workplace LIKE '%${workProvince}%'
+            </if>
+            <if test="workCity !=null and workCity !='-1'">
+                AND workplace LIKE '%${workCity}%'
+            </if>
+            <if test="heightLow != null and heightLow !='-1'">
+                AND height >= #{heightLow}
+            </if>
+            <if test="heightHigh !=null and heightHigh !='-1'">
+              AND  height &lt;=  #{heightHigh}
+            </if>
+            <if test="job != null and job !='-1'">
+                AND job LIKE #{job}
+            </if>
+
+            <if test="marryStatus !=null and marryStatus !='-1'">
+                AND marry_status LIKE #{marryStatus}
+            </if>
+            <if test="salaryLow !=null and salaryLow !='-1' ">
+                AND salary >= #{salaryLow}
+            </if>
+            <if test=" salaryHigh !=null and salaryHigh !='-1'">
+                AND salary &lt;= #{salaryHigh}
+            </if>
+           <!--以下为VIP的搜索条件-->
+             <if test="education != null and education !='-1'">
+                AND education LIKE #{education}
+            </if>
+            <if test="liveCondition != null and liveCondition !='-1'">
+                AND liveCondition LIKE #{liveCondition}
+            </if>
+            <if test="birthplace != null and birthplace !='-1'">
+                AND birthplace LIKE #{birthplace}
+            </if>
+            <if test="zodiac !=null and zodiac !='-1'">
+                AND zodiac LIKE #{zodiac}
+            </if>
+            <if test="animal != null and animal !='-1'">
+                AND animal LIKE #{animal}
+            </if>
+            <if test="nation != null and nation !='-1'">
+                AND nation LIKE #{nation}
+            </if>
+            <if test="religion != null and religion !='-1'">
+                AND religion LIKE #{religion}
+            </if>
+            <if test="ageLow != null and ageLow !='-1'">
+                AND YEAR(NOW())-YEAR(birthday) >= #{ageLow}
+            </if>
+            <if test="ageLow == null">
+                AND YEAR(NOW())-YEAR(birthday) >= 18
+            </if>
+            <if test="ageHigh != null and ageHigh !='-1'">
+                AND YEAR(NOW())-YEAR(birthday) &lt;= #{ageHigh}
+            </if>
+        </where>
+
+    </select>
+
+
+    <!--查找point在正负100之间的人的基本信息-->
+    <select id="findUserListByPoint" resultMap="userSearch">
+        SELECT user_basic.id userId,user_basic.*,YEAR(NOW())-YEAR(birthday) age,user_detail.*,user_detail.id
+        from user_basic,user_detail
+        where sexual = #{sexual}
+        AND user_basic.id = user_detail.id
+        and user_basic.id != #{id}
+        and authority =1
+        and status = 1
+        and point between ${point}-100 and ${point}+100
+
+    </select>
+
+    <!--查找point在正负100之间而且不在已经查找出来List中的人基本信息-->
+    <select id="findUserListByPointOther" resultMap="userSearch">
+
+        SELECT user_basic.id userId,user_basic.*,YEAR(NOW())-YEAR(birthday) age,user_detail.*,user_detail.id
+        from user_basic,user_detail
+        where user_basic.id != #{id}
+        and sexual = #{sexual}
+        and user_basic.id = user_detail.id
+        and authority =1
+        and status = 1
+        and point between ${point}-100 and ${point}+100
+        and user_basic.id not in(
+        <foreach collection="readyUserList" item="u" separator=",">
+            #{u}
+        </foreach>
+
+        )
+
+    </select>
+
+</mapper>

@@ -1,0 +1,533 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>个人资料</title>
+    <meta charset="utf-8">
+    <th:block th:include="front/common/common_resource :: resources"/>
+    <script th:inline="javascript">
+        userId = /*[[${session.user.id}]]*/'';
+    </script>
+    <script th:src="@{/js/front/view_profile.js}"></script>
+    <th:block th:remove="all">
+        <link href="../../static/css/bootstrap-3.1.1.min.css" rel='stylesheet' type='text/css'/>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="../../static/jquery/jquery.min.js"></script>
+        <script src="../../static/js/bootstrap.min.js"></script>
+        <!-- Custom Theme files -->
+        <link href="../../static/css/style.css" rel='stylesheet' type='text/css'/>
+
+        <!----font-Awesome----->
+        <link href="../../static/css/font-awesome.css" rel="stylesheet"/>
+        <!----font-Awesome----->
+    </th:block>
+</head>
+<body>
+<th:block th:include="front/common/header::nav"/>
+<div class="grid_3">
+    <div class="container" style="width: 90%">
+        <div class="breadcrumb1">
+            <ul>
+                <a href="index.html"><i class="fa fa-home home_1"></i></a>
+                <span class="divider">&nbsp;|&nbsp;</span>
+                <li class="current-page">查看个人资料</li>
+            </ul>
+        </div>
+
+        <div class="profile">
+            <div class="col-md-8">
+                <div class="profile-no-auth" th:if="${code==0}">
+                    <p><a href="javascript:void(0)" class="com-btn">投诉Ta</a></p>
+                    <span>该用户很害羞，个人资料不想被别人看到。。。</span>
+                </div>
+                <div class="profile-no-auth" th:if="${code==2}">
+                    <p><a href="javascript:void(0)" class="com-btn">投诉Ta</a></p>
+                    <span>该用户很高冷，个人资料只想让被自己关注的人看到。。。</span>
+                </div>
+            </div>
+            <div class="col-md-8 profile_left" th:if="${code==1}">
+                <h2 th:inline="text">
+                    [[${basic[nickname]}]]
+                    <img th:src="@{/images/vip.png}" th:if="${basic[isVip]==true}" class="flag"/>
+                    <img th:src="@{/images/vip-grey.png}" th:if="${basic[isVip]==false}" class="flag"/>
+                    <img th:src="@{/images/star-0.png}" th:if="${basic[isStar]==true}" class="flag"/>
+                    <img th:src="@{/images/star-0-grey.png}" th:if="${basic[isStar]==false}" class="flag"/>
+                </h2>
+                <div class="col_3">
+                    <div class="col-sm-4 row_2">
+                        <div id="slider" class="flexslider">
+                            <ul class="slides">
+                                <li>
+                                    <img th:src="@{/file(path=${basic[photo]})}" src="../../static/images/p1.jpg"/>
+                                </li>
+                                <li th:each="userPhoto:${userPhotos}">
+                                    <img th:src="@{/file(path=${userPhoto.photo})}" src="../../static/images/p2.jpg"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="carousel" class="flexslider" style="margin-bottom: 0!important;">
+                            <ul class="slides">
+                                <li>
+                                    <img th:src="@{/file(path=${basic[photo]})}" src="../../static/images/p1.jpg"/>
+                                </li>
+                                <li th:each="userPhoto:${userPhotos}">
+                                    <img th:src="@{/file(path=${userPhoto.photo})}" src="../../static/images/p2.jpg"/>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-8 row_1">
+                        <table class="table_working_hours">
+                            <tbody>
+                            <tr>
+                                <td class="day_label">ID：</td>
+                                <td class="day_value" th:text="${basic.id}">100002</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">年龄：</td>
+                                <td class="day_value" th:inline="text">[[${basic[age]}]]岁</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">身高：</td>
+                                <td class="day_value" th:inline="text">[[${basic[height]}]]cm</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">月收入：</td>
+                                <td class="day_value" th:inline="text">[[${basic[salary]}]]元</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">婚姻状况：</td>
+                                <td class="day_value" th:text="${basic[marryStatus]}">未婚</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">学历：</td>
+                                <td class="day_value" th:text="${basic[education]}">本科</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">工作地：</td>
+                                <td class="day_value" th:text="${basic[workplace]}">山东菏泽</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">籍贯：</td>
+                                <td class="day_value" th:text="${detail[birthplace]}">山东菏泽</td>
+                            </tr>
+                            <tr>
+                                <td class="day_label">职业：</td>
+                                <td class="day_value" th:text="${life[job]}">程序员</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-6 row_3">
+                        <button class="search-btn" th:id="'letter-btn-'+${basic.id}"><i class="fa fa-envelope-o"></i>&nbsp;发私信</button>
+                        <button class="search-btn" id="follow-btn"><i class="fa fa-heart-o"></i>&nbsp;<span
+                                id="follow-info" th:text="${isFollow==true?'已关注':'关注'}">请先登录</span></button>
+                        <button class="search-btn com-btn"><i class="fa fa-bell-o"></i>&nbsp;投诉</button>
+                    </div>
+                    <div class="clearfix">
+                    </div>
+                </div>
+                <div class="col_4">
+                    <div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                        <ul id="myTab" class="nav nav-tabs nav-tabs1" role="tablist">
+                            <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab"
+                                                                      data-toggle="tab" aria-controls="home"
+                                                                      aria-expanded="true">个人资料</a></li>
+                            <li role="presentation"><a href="#profile1" role="tab" id="profile-tab1" data-toggle="tab"
+                                                       aria-controls="profile1">择偶条件</a></li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+                                <div class="tab_box">
+                                    <h1>内心独白：</h1>
+                                    <p th:text="${detail[signature]}"></p>
+                                </div>
+                                <div class="basic_1">
+                                    <h3>基本信息</h3>
+                                    <div class="col-md-6 basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr>
+                                                <td class="day_label">性别：</td>
+                                                <td class="day_value" th:text="${basic[sex]}">女</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">民族：</td>
+                                                <td class="day_value" th:text="${detail[nation]}">汉</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">婚姻状况:</td>
+                                                <td class="day_value" th:text="${basic[marryStatus]}">未婚</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">生肖：</td>
+                                                <td class="day_value" th:text="${detail[animal]}">鼠</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">身高（cm）:</td>
+                                                <td class="day_value" th:inline="text">[[${basic[height]}]]</td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6 basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr>
+                                                <td class="day_label">年龄:</td>
+                                                <td class="day_value" th:inline="text">[[${basic[age]}]]岁</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">毕业院校:</td>
+                                                <td class="day_value" th:text="${basic[education]}">青岛科技大学</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">星座:</td>
+                                                <td class="day_value" th:text="${detail[zodiac]}">射手座</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">体重（kg）：</td>
+                                                <td class="day_value" th:inline="text">[[${detail[weight]}]]</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">职业：</td>
+                                                <td class="day_value"
+                                                    th:text="${life[job]}">程序员
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="basic_1">
+                                    <h3>工作生活</h3>
+                                    <div class="col-md-6 basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr>
+                                                <td class="day_label">住房条件：</td>
+                                                <td class="day_value" th:text="${basic[liveCondition]}">与家人同住</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否购车：</td>
+                                                <td class="day_value"
+                                                    th:text="${(life[car]==1)?'已购车':(life[car]==0?'未购车':life[car])}">已购车
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">个人性格：</td>
+                                                <td class="day_value" th:text="${life[character]}">活泼开朗</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6 basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr>
+                                                <td class="day_label">工作繁忙程度：</td>
+                                                <td class="day_value" th:text="${life[jobTime]}">
+                                                    较为繁忙
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否抽烟:</td>
+                                                <td class="day_value"
+                                                    th:text="${(life[smoke]==1)?'偶尔抽':(life[smoke]==0?'不抽烟':life[smoke])}">
+                                                    不抽烟
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否喝酒：</td>
+                                                <td class="day_value"
+                                                    th:text="${(life[drink]==1)?'偶尔喝':(life[drink]==0?'不喝酒':life[drink])}">
+                                                    不抽烟
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="basic_1">
+                                    <h3>个人情况</h3>
+                                    <div class="col-md-6 basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr class="opened">
+                                                <td class="day_label">婚恋史：</td>
+                                                <td class="day_value"
+                                                    th:text="${status[loveHistory]}">
+                                                    一次恋爱
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">想何时结婚</td>
+                                                <td class="day_value"
+                                                    th:text="${status[marryTime]}">
+                                                    2019年
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否接受异地恋：</td>
+                                                <td class="day_value"
+                                                    th:text="${(status[ldr]==1)?'可以接受':(status[ldr]==0?'不太看好':status[ldr])}">
+                                                    可以接受
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">父母状况 :</td>
+                                                <td class="day_value"
+                                                    th:text="${status[parentStatus]}">
+                                                    2019年
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">兄弟姐妹 :</td>
+                                                <td class="day_value"
+                                                    th:text="${status[broAndSis]}">
+                                                    2019年
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">家庭情况简述 :</td>
+                                                <td class="day_value"
+                                                    th:text="${status[familyBrief]}">
+                                                    2019年
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="profile1" aria-labelledby="profile-tab1">
+                                <div class="basic_1 basic_2">
+                                    <div class="basic_1-left">
+                                        <table class="table_working_hours">
+                                            <tbody>
+                                            <tr>
+                                                <td class="day_label">性别：</td>
+                                                <td class="day_value" th:text="${pick.sex}">男</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">年龄：</td>
+                                                <th:block th:if="${pick.ageLow==null}">
+                                                    <td class="day_value" th:if="${pick.ageHigh==null}"
+                                                        th:inline="text">不限
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.ageHigh!=null}"
+                                                        th:inline="text">[[${pick.ageHigh}]]岁以下
+                                                    </td>
+                                                </th:block>
+                                                <th:block th:if="${pick.ageLow!=null}">
+                                                    <td class="day_value" th:if="${pick.ageHigh==null}"
+                                                        th:inline="text">[[${pick.ageLow}]]岁以上
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.ageHigh!=null}"
+                                                        th:inline="text">[[${pick.ageLow}]]&nbsp;-&nbsp;[[${pick.ageHigh}]]岁
+                                                    </td>
+                                                </th:block>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">身高：</td>
+                                                <th:block th:if="${pick.heightLow==null}">
+                                                    <td class="day_value" th:if="${pick.heightHigh==null}"
+                                                        th:inline="text">不限
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.heightHigh!=null}"
+                                                        th:inline="text">[[${pick.heightHigh}]]cm以下
+                                                    </td>
+                                                </th:block>
+                                                <th:block th:if="${pick.heightLow!=null}">
+                                                    <td class="day_value" th:if="${pick.heightHigh==null}"
+                                                        th:inline="text">[[${pick.heightLow}]]cm以上
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.heightHigh!=null}"
+                                                        th:inline="text">[[${pick.heightLow}]]&nbsp;-&nbsp;[[${pick.heightHigh}]]cm
+                                                    </td>
+                                                </th:block>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">学历：</td>
+                                                <td class="day_value"
+                                                    th:text="${pick.education==null?'不限':pick.education}">本科
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">月收入：</td>
+                                                <th:block th:if="${pick.salaryLow==null}">
+                                                    <td class="day_value" th:if="${pick.salaryHigh==null}"
+                                                        th:inline="text">不限
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.salaryHigh!=null}"
+                                                        th:inline="text">[[${pick.salaryHigh}]]元以下
+                                                    </td>
+                                                </th:block>
+                                                <th:block th:if="${pick.salaryLow!=null}">
+                                                    <td class="day_value" th:if="${pick.salaryHigh==null}"
+                                                        th:inline="text">[[${pick.salaryLow}]]元以上
+                                                    </td>
+                                                    <td class="day_value" th:if="${pick.salaryHigh!=null}"
+                                                        th:inline="text">[[${pick.salaryLow}]]&nbsp;-&nbsp;[[${pick.salaryHigh}]]元
+                                                    </td>
+                                                </th:block>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">婚姻状况：</td>
+                                                <td class="day_value" th:text="${pick.marryStatus}">未婚</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">工作地区：</td>
+                                                <td class="day_value" th:text="${pick.workplace}">山东菏泽</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">职业：</td>
+                                                <td class="day_value" th:text="${pick.job==null?'不限':pick.job}">不限</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否介意Ta抽烟：</td>
+                                                <td class="day_value" th:if="${pick.smoke==null}">不限</td>
+                                                <td class="day_value" th:if="${pick.smoke==0}">不介意</td>
+                                                <td class="day_value" th:if="${pick.smoke==1}">介意</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="day_label">是否介意Ta喝酒：</td>
+                                                <td class="day_value" th:if="${pick.drink==null}">不限</td>
+                                                <td class="day_value" th:if="${pick.drink==0}">不介意</td>
+                                                <td class="day_value" th:if="${pick.drink==1}">介意</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 profile_right" style="padding: 0">
+                <div class="newsletter">
+                    <input id="id-input" type="text" size="30" placeholder="ID搜索">
+                    <input id="id-btn" class="search-btn" type="button" value="搜索">
+                </div>
+                <div class="index-right">
+                    <a th:href="@{/vip}"><h1>寻爱服务</h1></a>
+                    <div class="heart-divider">
+                        <div>
+                            <span class="grey-line"></span>
+                            <i class="fa fa-heart pink-heart"></i>
+                            <i class="fa fa-heart grey-heart"></i>
+                            <span class="grey-line"></span>
+                        </div>
+                    </div>
+                    <div class="service-1">
+                        <div class="container-fluid">
+                            <div class="row" style="margin-bottom: 15px">
+                                <div class="col-md-3">
+                                    <a th:href="@{/vip}"><img th:src="@{/images/vip-s.gif}"
+                                                              src="../../static/images/vip-s.gif"></a>
+                                </div>
+                                <div class="col-md-9">
+                                    <a th:href="@{/vip}"><h3>寻爱VIP</h3></a>
+                                    <p>免费看信、发信，15项特权助您快速找到心上人！</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <a th:href="@{/vip}"><img th:src="@{/images/star-s.gif}"
+                                                              src="../../static/images/star-s.gif"/></a>
+                                </div>
+                                <div class="col-md-9">
+                                    <a th:href="@{/vip}"><h3>星级用户</h3></a>
+                                    <p>搜索优先展示，助你寻爱！</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="index-right">
+                    <a th:href="@{/search}"><h1>推荐用户</h1></a>
+                    <div class="heart-divider">
+                        <div>
+                            <span class="grey-line"></span>
+                            <i class="fa fa-heart pink-heart"></i>
+                            <i class="fa fa-heart grey-heart"></i>
+                            <span class="grey-line"></span>
+                        </div>
+                    </div>
+                    <div class="snap-1" th:each="star:${stars}" style="margin: 10px">
+                        <div>
+                            <a th:href="@{'/profile/'+${star.id}}"><img th:src="@{/file(path=${star.photo})}" class="snap-photo"/></a>
+                        </div>
+                        <div>
+                            <a th:href="@{'/profile/'+${star.id}}">
+                                <h3 th:text="${star.nickname}">奔跑的蜗牛</h3>
+                            </a>
+                            <img th:src="@{/images/star-0.png}" class="snap-flag" title="星级用户标识"/>
+                            <p th:text="${'ID:'+star.id}">ID:10000001</p>
+                            <p><span th:text="${star.age+'岁'}">20岁</span>&nbsp;&nbsp;&nbsp;
+                                <span th:text="${star.workplace}">山东</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span th:text="${star.height+'cm'}">177cm</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="front/common/footer::foot"/>
+</div>
+<div class="modal fade" id="comModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true"
+     data-keyboard="true">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title">
+                    <span class="fa fa-bell-o"></span>
+                    <strong>投诉</strong></h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <span class="title">投诉对象：</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span id="obj" th:text="${basic.id}"></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;margin-bottom: 10px">
+                    <div class="col-md-2">
+                        <span class="title">投诉理由：</span>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="com-sel" class="form-control">
+                            <option value="-1">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <span class="title">描述：</span>
+                    </div>
+                    <div class="col-md-8">
+                        <textarea id="com-content" rows="3" cols="50"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+                        <button id="comSubBtn" class="btn btn-primary">提交</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭窗口</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

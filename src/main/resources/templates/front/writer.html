@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FindLover</title>
+    <!--公共css与js文件-->
+    <th:block th:include="front/common/common_resource::resources"/>
+    <!--ueditor引入-->
+    <script th:src="@{/plugins/ueditor/ueditor.config.js}" type="text/javascript" charset="utf-8"
+            src="../../static/plugins/ueditor/ueditor.config.js"></script>
+    <script th:src="@{/plugins/ueditor/ueditor.all.min.js}" type="text/javascript" charset="utf-8"
+            src="../../static/plugins/ueditor/ueditor.all.min.js"></script>
+    <script th:src="@{/plugins/ueditor/lang/zh-cn/zh-cn.js}" type="text/javascript" charset="utf-8"
+            src="../../static/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script th:src="@{/js/front/writer.js}" type="text/javascript" charset="utf-8"
+            src="../../static/js/front/writer.js"></script>
+
+</head>
+<body>
+<!-- 导航栏 -->
+<div class="navbar navbar-inverse-blue navbar">    <!--<div class="navbar navbar-inverse-blue navbar-fixed-top">-->
+    <div class="navbar-inner">
+        <div class="container"><a class="brand" href="index.html">
+            <img th:src="@{/images/logo.png}" src="../../static/images/logo.png" alt="logo"></a>
+            <div class="pull-right">
+                <nav class="navbar nav_bottom" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header nav_2">
+                        <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse"
+                                data-target="#bs-megadropdown-tabs">Menu <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"></a></div>
+                    <div class="collapse navbar-collapse" id="bs-megadropdown-tabs">
+                        <ul class="nav navbar-nav nav_1">
+                            <li><a th:href="@{/writer/logout}">登出</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div> <!-- end pull-right -->
+            <div class="clearfix"></div>
+        </div> <!-- end container -->
+    </div> <!-- end navbar-inner -->
+</div> <!-- end navbar-inverse-blue -->
+
+<div class="container grid_0">
+    <form id="essay-form" th:action="@{/writer/upload}" th:method="post" class="form-horizontal" enctype="multipart/form-data">
+        <div class="text-center" style="margin: 100px">
+            <h1>文章申请发布</h1>
+        </div>
+
+        <div class="form-group">
+            <label for="photo" class="col-md-2 control-label">文章配图</label>
+            <div class="col-md-4">
+                <input id="photo" name="ephoto" type="file" class="control-file" placeholder="笔名">
+                <input id="brief" name="brief" type="hidden" >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="title" class="col-md-2 control-label">文章标题</label>
+            <div class="col-md-4">
+                <input id="title" name="title" type="text" class="form-control" placeholder="文章标题">
+            </div>
+            <div class="col-md-5 text-right">
+                <input type="submit" class="btn btn-danger" value="申请发布">
+            </div>
+        </div>
+
+        <div align="center" style="margin: 30px">
+            <textarea id="editor" name="essays" style="height: 600px;width: 95%"></textarea>
+        </div>
+    </form>
+</div>
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+</body>
+</html>	

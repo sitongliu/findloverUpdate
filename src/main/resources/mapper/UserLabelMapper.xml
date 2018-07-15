@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hpe.findlover.mapper.UserLabelMapper" >
+  <resultMap id="BaseResultMap" type="com.hpe.findlover.model.UserLabel" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="label_id" property="labelId" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!--联合id查询指定用户指定标签-->
+  <select id="selectLabelByUserIdAndLabelId" parameterType="integer" resultType="userLabel">
+    SELECT * FROM user_label WHERE user_id=#{arg0} AND label_id =#{arg1}
+  </select>
+
+  <!--联合id查询指定用户指定标签-->
+  <delete id="deleteLabelByUserIdAndLabelId" parameterType="integer">
+    DELETE FROM user_label WHERE user_id=#{arg0} AND label_id =#{arg1}
+  </delete>
+</mapper>

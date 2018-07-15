@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Viewed-not_contacted</title>
+    <th:block th:include="front/common/common_resource::resources"/>
+    <script th:src="@{/js/front/success_story_info.js}"></script>
+
+</head>
+<body>
+<th:block th:include="front/common/header::nav"/>
+<div class="grid_3">
+    <div class="container">
+        <div class="container-fluid " style="height: auto">
+            <th:block th:utext="${content}"></th:block>
+
+        </div>
+        <div class="text-right">
+            <input id="like" th:value="${like}" hidden>
+            <input id="likeCount" th:value="${likeCount}" hidden>
+            <div id="like-story" th:style="${like?'cursor: pointer;color:red':'cursor: pointer'}"
+                 th:text="${'('+likeCount+')'}" class='fa fa-lg glyphicon-thumbs-up fa-thumbs-o-up col-md-11'>
+            </div>
+        </div>
+        <div class="col-md-12 breadcrumb1 text-center">
+            <ul>
+                <span class="divider">&nbsp;<i class="grey-line"></i>&nbsp;</span>
+                <li class="current-page"><h1>用户评论</h1></li>
+                <span class="divider">&nbsp;<i class="grey-line"></i>&nbsp;</span>
+
+            </ul>
+            <ul>
+                <li class="current-page"><h4>comments</h4></li>
+            </ul>
+        </div>
+        <div class="col-md-12 profile_left">
+            <div class="col_4">
+                <div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                    <div id="myTabContent" class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+                            <div class="tab_box tab_box1">
+                                <h1>我也要给这对新人送上我真挚的祝福</h1>
+
+                            </div>
+                            <div class="clearfix"></div>
+
+                            <div class="about_middle" style="padding:1em 0 ">
+                                <div class="container">
+                                    <form>
+                                        <div class="row text-center">
+                                            <textarea class="col-md-9 col-sm-offset-1" rows="5" id="Message"
+                                                      th:placeholder="请输入祝福内容"></textarea>
+                                        </div>
+                                        <div class="row" style="margin-top: 10px">
+                                            <div class="col-md-9"></div>
+                                            <input class="col-md-1 btn btn-info text-right" name="submit" id="submit"
+                                                   value="祝福他们">
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                            <div id="replyDiv">
+                                <input id="storyId" th:value="${successStory.id}" hidden>
+                                <th:block th:each="successStoryReply,iterStat:${reply.list}">
+                                    <div class="jobs-item with-thumb" style="margin-top: 50px">
+                                        <div class="thumb_top">
+                                            <div class="thumb"><a th:href="@{'/profile/'+${successStoryReply.user.id}}"><img
+                                                    th:src="@{/file(path=${successStoryReply.user.photo})}"
+                                                    class="img-responsive" alt=""/></a></div>
+                                            <div class="jobs_right">
+                                                <h6 class="title"><a
+                                                        th:href="@{'/profile/'+${successStoryReply.user.id}}"
+                                                        th:text="${successStoryReply.user.nickname}"></a></h6>
+                                                <ul class="login_details1">
+                                                    <li th:text="${#dates.format(successStoryReply.replyTime,'yyyy-MM-dd')}"></li>
+                                                </ul>
+                                                <p style="font-size: 20px;" class="description"
+                                                   th:text="${successStoryReply.content}"></p>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <div class="col-sm-12" th:if="${reply.total gt 10 }" >
+                                <br/>
+                                 <button id="loadmore" type="button" class="btn btn-success btn-lg btn-block">加载更多...
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+</body>
+</html>	

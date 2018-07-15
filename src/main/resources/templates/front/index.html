@@ -1,0 +1,448 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FindLover</title>
+    <!--公共css与js文件-->
+    <th:block th:include="front/common/common_resource::resources"/>
+
+
+    <!--VIP和星级用户标识-->
+    <link href="../../static/css/jquery.toolbar.css" th:href="@{/css/jquery.toolbar.css}" rel="stylesheet"/>
+    <link href="../../static/css/documentation.css" th:href="@{/css/documentation.css}" rel="stylesheet"/>
+    <script src="../../static/jquery/jquery.toolbar.js" th:src="@{/jquery/jquery.toolbar.js}"></script>
+    <!--光荣脱单榜动画-->
+    <link rel="stylesheet" href="../../static/css/animate.css" th:href="@{/css/animate.css}"/>
+    <script src="../../static/js/modernizr-2.6.2.min.js" th:src="@{/js/modernizr-2.6.2.min.js}"></script>
+    <script src="../../static/jquery/jquery.waypoints.min.js" th:src="@{/jquery/jquery.waypoints.min.js}"></script>
+    <script src="../../static/jquery/jquery.gridrotator.js" th:src="@{/jquery/jquery.gridrotator.js}"></script>
+    <script src="../../static/plugins/layer-v3.1.1/layer/layer.js" th:src="@{/plugins/layer-v3.1.1/layer/layer.js}"></script>
+
+
+    <!--index.js-->
+    <script src="../../static/js/front/index.js" th:src="@{/js/front/index.js}"></script>
+</head>
+<body>
+<!-- 导航栏 -->
+<th:block th:include="front/common/header::nav"/>
+<!--导航栏（th:remove)-->
+
+<div class="banner">
+    <div class="container">
+        <div class="banner_info">
+            <h3 style="font-family: '华文行楷', sans-serif">春暖花开，不要错过你的爱！</h3>
+           <!-- <a th:href="@{/search}" class="hvr-shutter-out-horizontal">Find your Lover</a> -->
+            <button class="hvr-shutter-out-horizontal" onclick="findOne()">Find Your Best Lover</button>
+        </div>
+    </div>
+
+    <div class="profile_search">
+        <div class="container wrap_1">
+            <form id="search-form">
+                <div class="search_top">
+                    <div class="inline-block">
+                        <label class="gender_1">我想找：</label>
+                        <div class="age_box1" style="max-width: 100%; display: inline-block;">
+                            <select id="sex-select" name="sex">
+                                <option th:selected="${userPick.sex=='男'}" value="男">男</option>
+                                <option th:selected="${userPick.sex=='女'}" value="女">女</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="inline-block">
+                        <label class="gender_1">工作地区：</label>
+                        <div class="age_box1" style="margin-right: 0.3em">
+                            <select id="province-select" name="workProvince">
+                                <option value="-1">不限</option>
+                            </select>
+                        </div>
+                        <div class="age_box1">
+                            <select id="city-select" name="workCity">
+                                <option value="-1">不限</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="inline-block" style="margin-right: 0">
+                        <label class="gender_1">职业：</label>
+                        <div class="age_box1">
+                            <select id="job-select" name="job">
+                                <option value="-1">不限</option>
+                                <option th:each="job : ${jobList}" th:text="${job.value}"
+                                        th:value="${job.value}" th:selected="${job.value==userPick.job}">销售
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline-block">
+                    <div class="age_box2">
+                        <label class="gender_1">年龄：</label>
+                        <div class="age_box1">
+                            <select id="age-select-low" name="ageLow">
+                                <option value="-1">不限</option>
+                            </select>
+                            <span>-</span>
+                            <select id="age-select-high" name="ageHigh">
+                                <option value="-1">不限</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline-block" style="margin-right: 0">
+                    <div class="age_box2">
+                        <label class="gender_1">身高：</label>
+                        <div class="age_box1">
+                            <select id="height-select-low" name="heightLow">
+                                <option value="-1">不限</option>
+                            </select>
+                            <span>-</span>
+                            <select id="height-select-high" name="heightHigh">
+                                <option value="-1">不限</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="submit inline-block" style="margin-top: 10px">
+                    <input id="submit-btn" class="hvr-wobble-vertical" type="button" value="开始寻爱~"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container grid_0">
+    <div class="col-md-8" style="padding: 0">
+        <div class="index-left">
+            <div class="grid_1">
+
+                <!--弹出页面-->
+                <div id="page3" hidden="hidden">
+                </div>
+
+                <h1>每日情缘</h1>
+                <div class="heart-divider">
+                    <span class="grey-line"></span>
+                    <i class="fa fa-heart pink-heart"></i>
+                    <i class="fa fa-heart grey-heart"></i>
+                    <span class="grey-line"></span>
+                </div>
+            </div>
+            <!--每日情缘-->
+            <div style="margin-bottom: 30px;height: 450px;">
+                <!-- slider -->
+                <div id="dayLover" class="agile_featured-profiles">
+                    <ul id="flexiselDemo3">
+                        <li id="page1">
+                            <div th:each="user,userStat:${dayLover}" th:if="${userStat.index<8}"
+                                 class="col-md-3 biseller-column">
+                                <a th:href="@{'profile/'+${user.id}}">
+                                    <div class="profile-image">
+                                        <img th:src="@{'file?path='+${user.photo}}" style="width: 206px;height: 206px"
+                                             class="img-responsive" alt="profile image"/>
+                                        <div class="agile-overlay">
+                                            <h4>
+                                                <span th:text="${user.nickname}"></span>
+                                                <img th:if="${user.vip==true}" th:src="@{/images/vip.png}"
+                                                     class="snap-flag"/>
+                                                <img th:if="${user.vip==false}" th:src="@{/images/vip-grey.png}"
+                                                     class="snap-flag"/>
+
+                                                <img th:if="${user.star==true}" th:src="@{/images/star-0.png}"
+                                                     class="snap-flag"/>
+                                                <img th:if="${user.star==false}" th:src="@{/images/star-0-grey.png}"
+                                                     class="snap-flag"/>
+
+                                            </h4>
+                                            <ul>
+                                                <li><span th:text="${user.age+'岁'}">21岁</span><span
+                                                        th:text="${user.workplace}">山东青岛</span></li>
+                                                <li><span th:text="${user.height+'cm'}">165cm</span><span
+                                                        th:text="${user.salary+'元'}">5000元</span></li>
+                                                <li th:text="${user.userDetail.signature}"></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                        <li id="page2">
+                            <div th:each="user,userStat:${dayLover}"
+                                 th:if="${userStat.index>=8 && userStat.index<16}"
+                                 class="col-md-3 biseller-column">
+                                <a th:href="@{'profile/'+${user.id}}">
+                                    <div class="profile-image">
+                                        <img th:src="@{'file?path='+${user.photo}}"
+                                             class="img-responsive" style="width: 206px;height: 206px"
+                                             alt="profile image"/>
+                                        <div class="agile-overlay">
+                                            <h4>
+                                                <span th:text="${user.nickname}"></span>
+                                                <img th:if="${user.vip==true}" th:src="@{/images/vip.png}"
+                                                     class="snap-flag"/>
+                                                <img th:if="${user.vip==false}" th:src="@{/images/vip-grey.png}"
+                                                     class="snap-flag"/>
+
+                                                <img th:if="${user.star==true}" th:src="@{/images/star-0.png}"
+                                                     class="snap-flag"/>
+                                                <img th:if="${user.star==false}" th:src="@{/images/star-0-grey.png}"
+                                                     class="snap-flag"/>
+                                            </h4>
+                                            <ul>
+                                                <li><span th:text="${user.age+'岁'}">21岁</span><span
+                                                        th:text="${user.workplace}">山东青岛</span></li>
+                                                <li><span th:text="${user.height+'cm'}">165cm</span><span
+                                                        th:text="${user.salary+'元'}">5000元</span></li>
+                                                <li th:text="${user.userDetail.signature}"></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                    <div>
+                        <a href="" th:href="@{/search}">想查看更多符合你条件的用户？尝试一下搜索吧！</a>
+                    </div>
+                </div>
+            </div>
+            <!--成功故事-->
+            <div class="grid_1">
+                <a href="" th:href="@{/success_story}"><h1>成功故事</h1></a>
+                <div class="heart-divider">
+                    <span class="grey-line"></span>
+                    <i class="fa fa-heart pink-heart"></i>
+                    <i class="fa fa-heart grey-heart"></i>
+                    <span class="grey-line"></span>
+                </div>
+                <div class="suceess_story">
+                    <ul>
+                        <li th:each="success_story:${successStories}">
+                            <div class="suceess_story-date">
+                                <span th:text="${success_story.successTime}" class="entry-1">Dec 20, 2015</span>
+                            </div>
+                            <div class="suceess_story-content-container">
+                                <figure class="suceess_story-content-featured-image">
+                                    <img th:src="@{/file(path=${success_story.photo})}" width="75" height="75"
+                                         class="img-responsive"/>
+                                </figure>
+                                <div class="suceess_story-content-info">
+                                    <h4><a th:href="@{'/success_story/success_story_info/'+${success_story.id}}">[[${success_story.userLeft.nickname}]]&nbsp;&amp;&nbsp;[[${success_story.userRight.nickname}]]</a>
+                                    </h4>
+                                    <p>[[${success_story.brief}]]<a th:href="@{'/success_story/success_story_info/'+${success_story.id}}">More...</a></p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //featured profiles -->
+    <div class="col-md-4" style="padding: 0">
+        <!--个人资料-->
+        <div class="index-right" style="padding-top: 0">
+            <div class="snap container-fluid">
+                <div class="snap-1">
+                    <div>
+                        <a th:href="@{'profile/'+${session.user.id}}"><img
+                                th:src="@{'file?path='+${session.user.photo}}"
+                                class="snap-photo"/></a>
+                    </div>
+                    <div>
+                        <a th:href="@{'profile/'+${session.user.id}}">
+                            <h3 th:text="${session.user.nickname}">奔跑的蜗牛</h3>
+                        </a>
+                        <img th:if="${session.user.vip}" th:src="@{/images/vip.png}" src="../../static/images/vip.png"
+                             data-toolbar="vip-toolbar"
+                             data-toolbar-animation="grow" class="snap-flag" data-toolbar-style="warning"/>
+                        <img th:if="${!session.user.vip}" th:src="@{/images/vip-grey.png}" class="snap-flag"/>
+
+                        <img th:if="${session.user.star}" th:src="@{/images/star-0.png}"
+                             src="../../static/images/star-0.png"
+                             data-toolbar="star-toolbar"
+                             data-toolbar-animation="grow" class="snap-flag" data-toolbar-style="warning"/>
+                        <img th:if="${!session.user.star}" th:src="@{/images/star-0-grey.png}" class="snap-flag"/>
+
+                        <img th:if="${asset>0}" th:src="@{/images/coin.jpg}" src="../../static/images/coin.jpg"
+                             data-toolbar="asset-toolbar"
+                             data-toolbar-animation="grow" class="snap-flag" data-toolbar-style="warning"/>
+                        <img th:if="${asset==0}" th:src="@{/images/coin-grey.png}" class="snap-flag"/>
+                        <div id="vip-deadline" class="hidden">
+                            <a href="javascript:void(0)" style="width: auto;height: auto;color: white"
+                               th:text="${'vip剩余时间：'+ vipDate + '天'}"></a>
+                        </div>
+                        <div id="star-deadline" class="hidden">
+                            <a href="javascript:void(0)" style="width: auto;height: auto;color: white"
+                               th:text="${'星级用户剩余时间：'+ starDate + '天'}"></a>
+                        </div>
+                        <div id="user-asset" class="hidden">
+                            <a href="javascript:void(0)" style="width: auto;height: auto;color: white"
+                               th:text="${'您所剩的牵手币：'+ asset + '个'}"></a>
+                        </div>
+                        <p th:text="${'ID:'+session.user.id}">ID:10000001</p>
+                        <p><span th:text="${session.user.age+'岁'}">20岁</span>&nbsp;&nbsp;&nbsp;
+                            <span th:text="${session.user.workplace}">山东</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span th:text="${session.user.height+'cm'}">177cm</span></p>
+                        <a th:href="@{/usercenter}" class="button button-highlight button-rounded button-small">完善资料</a>
+                    </div>
+                </div>
+                <div class="row snap-2">
+                    <div class="button-group">
+                        <a th:href="@{/usercenter(type='photo')}" class="button button-rounded">上传照片</a>
+                        <a th:href="@{letter}" class="button button-rounded">查看私信</a>
+                        <a th:href="@{/usercenter(type='asset')}" class="button button-rounded">牵手币充值</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--光荣脱单榜-->
+        <div class="index-right">
+            <h1>光荣脱单榜</h1>
+            <div class="heart-divider">
+                <span class="grey-line"></span>
+                <i class="fa fa-heart pink-heart"></i>
+                <i class="fa fa-heart grey-heart"></i>
+                <span class="grey-line"></span>
+            </div>
+            <div class="container right-1">
+                <div th:each="notSingle :${vipNotSingles}"
+                     class="col-md-3 biseller-column">
+                    <a th:href="@{'profile/'+${notSingle.key.id}}">
+                        <div class="profile-image">
+                            <img th:src="@{'file?path='+${notSingle.key.photo}}" style="width: 100px;height: 85px"
+                                 class="img-responsive" alt="profile image"/>
+                            <div class="agile-overlay">
+                                <h4 style="margin-top: 3px;margin-bottom: 3px">
+                                    <span style="font-size: 13px" th:text="${notSingle.key.nickname}"></span>
+                                </h4>
+                                <ul>
+                                    <li><span th:text="${'历时'+notSingle.value+'天找到真爱'}" style="width: 100%;">21岁</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!--<div class="container right-1">-->
+            <!--<div id="ri-grid" class="ri-grid animate-box">-->
+            <!--<img th:src="@{/images/loading.gif}" class="ri-loading-image"-->
+            <!--src="../../static/images/loading.gif"/>-->
+            <!--<ul>-->
+            <!--<li th:each="notSingle :${vipNotSingles}">-->
+            <!--<a th:id="'li-'+${notSingle.key.id}">-->
+            <!--<img th:src="@{'/file?path='+${notSingle.key.photo}}"-->
+            <!--style="width:100px !important;height: 100px;"-->
+            <!--src="../../static/images/pic1.jpg"/>-->
+            <!--<div class="desc">-->
+            <!--<h3 th:text="${notSingle.key.nickname}">奔跑的小猪</h3>-->
+            <!--<p th:text="${'历时'+notSingle.value+'天'}">历时1个月</p>-->
+            <!--<p>找到真爱</p>-->
+            <!--</div>-->
+            <!--</a>-->
+            <!--</li>-->
+            <!--</ul>-->
+            <!--</div>-->
+            <!--</div>-->
+            <div class="clearfix"></div>
+
+
+        </div>
+        <!--谁看过我-->
+        <div class="index-right">
+            <a th:href="@{/visit_trace}"><h1>谁看过我</h1></a>
+            <div class="heart-divider">
+                <div>
+                    <span class="grey-line"></span>
+                    <i class="fa fa-heart pink-heart"></i>
+                    <i class="fa fa-heart grey-heart"></i>
+                    <span class="grey-line"></span>
+                </div>
+            </div>
+            <div class="record-1">
+                <ul>
+                    <li th:each="visitor:${visitTraces}">
+                        <a th:href="@{'/profile/'+${visitor.userBasic.id}}">
+                            <img th:src="@{'/file?path='+${visitor.userBasic.photo}}"
+                                 src="../../static/images/pic1.jpg"/>
+                            <span th:text="${visitor.userBasic.nickname}">奔跑的小猪</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <!--寻爱服务-->
+        <div class="index-right">
+            <a href=""><h1>寻爱服务</h1></a>
+            <div class="heart-divider">
+                <div>
+                    <span class="grey-line"></span>
+                    <i class="fa fa-heart pink-heart"></i>
+                    <i class="fa fa-heart grey-heart"></i>
+                    <span class="grey-line"></span>
+                </div>
+            </div>
+            <div class="service-1">
+                <div class="container-fluid">
+                    <div class="row" style="margin-bottom: 15px">
+                        <div class="col-md-3">
+                            <a th:href="@{/vip}"><img th:src="@{/images/vip-s.gif}" src="../../static/images/vip-s.gif"></a>
+                        </div>
+                        <div class="col-md-9">
+                            <a th:href="@{/vip}"><h3>寻爱VIP</h3></a>
+                            <p>免费看信、发信，15项特权助您快速找到心上人！</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a th:href="@{/vip}"><img th:src="@{/images/star-s.gif}"
+                                                      src="../../static/images/star-s.gif"/></a>
+                        </div>
+                        <div class="col-md-9">
+                            <a th:href="@{/vip}"><h3>星级用户</h3></a>
+                            <p>搜索优先展示，助你寻爱！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bg">
+    <div class="container">
+        <h3>Guest Messages</h3>
+        <div class="heart-divider">
+            <span class="grey-line"></span>
+            <i class="fa fa-heart pink-heart"></i>
+            <i class="fa fa-heart grey-heart"></i>
+            <span class="grey-line"></span>
+        </div>
+        <div class="col-sm-6">
+            <div class="bg_left">
+                <h4>寻爱网</h4>
+                <h5>网站简介</h5>
+                <p>寻爱网是一个大型婚恋交友网站，旨在帮助会员通过网站提供的资料信息找到心仪对象。
+                    寻爱网服务于真诚征友的单身人群，并建立严格的身份认证机制和会员投诉机制，
+                    通过客服人工审核、技术屏蔽以及会员投诉等方式屏蔽不良会员，
+                    保证征友会员的质量、征友过程的安全，和征友的效果。
+                希望每一位用户都能在这里找到自己的真爱</p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="bg_left">
+                <h4>About us</h4>
+                <h5>bao jing da tui</h5>
+                <p>
+                    There are some things we have to say about this project. From the beginning of the demand analysis stage, we think this project is difficult to complete,
+                    Until now, all the functions of the project are basically realized,
+                    we have to say that our group is very strong!
+                    Thank you for this month each member of mutual assistance,we are the best!</p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+</body>
+</html>	

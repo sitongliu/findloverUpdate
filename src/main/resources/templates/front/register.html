@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FindLover-注册</title>
+    <th:block th:include="front/common/common_resource :: resources"/>
+
+    <script th:src="@{/js/front/register.js}" src="../../static/js/front/register.js"></script>
+</head>
+<body>
+<!-- ============================  Navigation Start =========================== -->
+<div class="navbar navbar-inverse-blue navbar">
+    <!--<div class="navbar navbar-inverse-blue navbar-fixed-top">-->
+    <div class="navbar-inner">
+        <div class="container"><a class="brand" href="index.html">
+            <img th:src="@{/images/logo.png}" src="../../static/images/logo.png" alt="logo"></a>
+            <div class="pull-right">
+                <nav class="navbar nav_bottom" role="navigation">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header nav_2">
+                        <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse"
+                                data-target="#bs-megadropdown-tabs">Menu <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"></a></div>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-megadropdown-tabs">
+                        <ul class="nav navbar-nav nav_1">
+                            <li><a href="login.html">已经有账号了，现在去登陆！</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>
+            </div> <!-- end pull-right -->
+            <div class="clearfix"></div>
+        </div> <!-- end container -->
+    </div> <!-- end navbar-inner -->
+</div> <!-- end navbar-inverse-blue -->
+<!--============================  Navigation End ============================-->
+<div class="banner-register">
+    <div class="grid_3">
+        <div class="container">
+            <div class="col-md-offset-1 breadcrumb1">
+                <ul>
+                    <a href="index.html"><i class="fa fa-heart home_1"></i></a>
+                    <span class="divider">&nbsp;|&nbsp;</span>
+                    <li style="color: white">填写您的信息，开启寻爱之旅~</li>
+                </ul>
+            </div>
+            <div class="col-md-6 dim_background">
+                <form id="reform" class="form-horizontal reg-form" th:action="@{/register}" method="post">
+                    <div class="form-group">
+                        <label for="nickname" class="col-md-3 control-label">昵称</label>
+                        <div class="col-md-9">
+                            <input  type="text" class="form-control" id="nickname" name="nickname" placeholder="昵称">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">性别</label>
+                        <div class="col-md-3">
+                            <label class="radio-inline">
+                                <input type="radio" name="sex" value="男" checked>男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="sex" value="女">女
+                            </label>
+                        </div>
+                        <label class="col-md-3 control-label">性取向</label>
+                        <div class="col-md-3">
+                            <label class="radio-inline">
+                                <input type="radio" name="sexual" value="男" checked>男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="sexual" value="女">女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthday" class="col-md-3 control-label">生日</label>
+                        <div class="col-md-9">
+                            <input type="date" class="form-control" id="birthday" name="birthday">
+                        </div>
+                    </div>
+                    <div class="form-group" id="area">
+                        <label class="col-md-3 control-label">所在地区</label>
+                        <div class="col-md-4">
+                            <select name="province" id="province" class="form-control">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="col-md-offset-1 col-md-4">
+                            <select name="city" id="city" class="form-control">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">婚姻状态</label>
+                        <div class="col-md-9">
+                            <select name="marryStatus" id="marryStatus" class="form-control">
+                                <option value="未婚">未婚</option>
+                                <option value="离异">离异</option>
+                                <option value="丧偶">丧偶</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="height" class="col-md-3 control-label">身高</label>
+                        <div class="col-md-9">
+                            <select name="height" id="height" class="form-control">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="education" class="col-md-3 control-label">学历</label>
+                        <div class="col-md-9">
+                            <select name="education" id="education" class="form-control">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="salary" class="col-md-3 control-label">月薪</label>
+                        <div class="col-md-9">
+                            <select name="salary" id="salary" class="form-control">
+                                <option value="">请选择</option>
+                            </select>
+                            <!--<input type="text" class="form-control" id="salary" name="salary" placeholder="月薪（元）">-->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tel" class="col-md-3 control-label">手机号</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="tel" name="tel" placeholder="手机号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="col-md-3 control-label">邮箱</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="email" name="email"
+                                   placeholder="将作为你的登录账号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-md-3 control-label">密码</label>
+                        <div class="col-md-9">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confpassword" class="col-md-3 control-label">确认密码</label>
+                        <div class="col-md-9">
+                            <input type="password" class="form-control" id="confpassword" name="confpassword"
+                                   placeholder="确认密码">
+                        </div>
+                    </div>
+                    <div class="col-md-offset-3 text-center">
+                        <input type="submit" value="开启寻爱之旅" class="btn_1 submit">
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="front/common/footer::foot"/>
+</body>
+</html>	

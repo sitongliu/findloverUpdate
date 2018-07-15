@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>私信</title>
+    <!--公共css与js文件-->
+    <th:block th:include="front/common/common_resource::resources"/>
+    <link th:href="@{/css/chat-style.css}" href="../../static/css/chat-style.css"/>
+    <script src="../../static/js/front/letter.js" th:src="@{/js/front/letter.js}"></script>
+    <script th:inline="javascript">
+        $(function () {
+//            var photo =''/*[[@{/file(path=${session.user.photo})}]]*/;
+            $(".chat-right").addClass("right-photo");
+
+        })
+    </script>
+    <script >
+
+    </script>
+    <style>
+        .chat-right:before {
+        }
+
+        .chat-left:before {
+        }
+    </style>
+</head>
+
+<body>
+<th:block th:include="front/common/header::nav"/>
+<div class="grid_3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="breadcrumb1">
+                    <ul>
+                        <a href="index.html"><i class="fa fa-comment-o home_1"></i></a>
+                        <span class="divider">&nbsp;|&nbsp;</span>
+                        <li class="current-page">私信：</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!--左侧消息列表-->
+            <div class="col-md-9  messageContainer">
+                <input th:value="${session.user.vip}" id="userVip" hidden/>
+                <div class="row">
+                    <!--联系人-->
+                    <div class="col-md-3" >
+                        <ul class="match_box" id="contactsLeft" name="contactsLeft" style="overflow-y:scroll;height: 500px;">
+                            <li><h4>联系人</h4></li>
+                            <hr/>
+                            <span id="hiddenInput" hidden></span>
+                            <th:block th:each="letterUser,iterStat : ${map[list]}">
+                                <li>
+                                    <div style="cursor:pointer; height: 50px;" name="userLetter" th:id="${letterUser.id}"
+                                         class="jobs-item with-thumb userLetter oldUserLetter">
+                                        <input th:value="${letterUser.id}" id="otherUserId" hidden/>
+                                        <div class="thumb_top">
+                                            <div class="thumb"   style="width: 50px ; margin-right:0 ; height: 40px;">
+                                                <img th:src="@{/file(path=${letterUser.photo})}"
+                                                     style="width: 40px ;height: 40px;"
+                                                     class="img-responsive" alt=""/>
+
+                                            </div>
+                                            <div class="jobs_right">
+                                                <div>
+                                                    <p th:text="${letterUser.nickname}"></p>
+                                                    <p style="color: #c2c2c2;"
+                                                       th:text="${#dates.format(letterUser.lastTime,'yyyy/MM/dd')}"></p>
+                                                </div>
+                                            </div>
+                                            <th:block th:if="${map[num].get(iterStat.index)>0 && iterStat.index>0}">
+                                                <div class="redPoint">
+                                                    <span style="color: #FFFFFF;font-size: 5px;line-height: 20px; position:relative;top:-2px;" th:text="${map[num].get(iterStat.index) }"></span>
+                                                </div>
+                                            </th:block>
+                                        </div>
+                                    </div>
+                                </li>
+                                <hr/>
+                            </th:block>
+                        </ul>
+                    </div>
+                    <!--消息列表-->
+                    <div class="col-md-9 members_box2 chat-window">
+                        <!--消息-->
+                        <div id="convo">
+                            <div style="text-align: center"><a href="#" id="overloadOldLetter">点击加载更多聊天记录>></a></div>
+                            <ul class="chat-thread" id="letterUl">
+                                <!--th:style="background:url(' + @{'/images/13.jpg'} + ')'"-->
+                                <!--<li class="chat-right">Are we meeting today?</li>-->
+                                <!--<li class="chat-left">yes, what time suits you?</li>-->
+                                <!--<li class="chat-right">I was thinking after lunch, I have a meeting in the morning</li>-->
+                                <!--<li class="chat-left">Are we meeting today?</li>-->
+                                <!--<li class="chat-right">yes, what time suits you?</li>-->
+                                <!--<li class="chat-left">I was thinking after lunch, I have a meeting in the morning</li>-->
+                                <!--<li class="chat-left">Are we meeting today?</li>-->
+                                <!--<li class="chat-right">yes, what time suits you?</li>-->
+                                <!--<li class="chat-left">I was thinking after lunch, I have a meeting in the morning</li>-->
+                                <!--<li class="chat-left">Are we meeting today?</li>-->
+                                <!--<li class="chat-right">yes, what time suits you?</li>-->
+                                <!--<li class="chat-left">I was thinking after lunch, I have a meeting in the morning</li>-->
+                            </ul>
+                        </div>
+                        <!--发送消息框-->
+                        <input id="userid" th:value="${session.user.getId()}" hidden/>
+                        <div class="row">
+                            <form class="form-inline">
+                                <div style="margin:15px">
+                                    <th:block th:if="${session.user.getVip()==true}">
+                                        <textarea id="vipInput" name="vipInput" class="col-md-11" rows="3"
+                                                 placeholder="请输入消息内容">
+                                           </textarea>
+                                    </th:block>
+                                    <th:block th:if="${session.user.getVip()==false}">
+                                        <textarea id="notVipInput" name="notVipInput" class="col-md-11" rows="3"
+                                             placeholder="请输入消息内容,每条消息将会收费五个牵手币">
+                                        </textarea>
+                                    </th:block>
+
+                                </div>
+                                <div>
+                                    <input id="inputSubmit" name="inputSubmit" class="col-md-1 btn btn-info text-right"
+                                           style="margin: 37px 0 0 5px"
+                                           value="发送">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--右侧导航栏-->
+            <div class="col-md-3 col_5">
+                <div class="center-middle" style="background-color: white">
+                    <a th:href="@{'/profile/'+${session.user.id}}"><img th:src="@{/file(path=${session.user.photo})}" class="pub-msg-img"/>
+                        <p th:text="${session.user.nickname}"></p></a>
+                    <p th:inline="text">ID:&nbsp;[[${session.user.id}]]</p>
+                </div>
+                <!--消息菜单栏-->
+                <ul class="match_box message">
+                    <a th:href="@{/letter}"><li><i class="fa fa-comments-o"></i> 私信<span id="letter-count" th:inline="text">([[${letterCount}]])</span></li></a>
+                    <a th:href="@{/follow}"><li><i class="fa fa-heart"></i> 关注<span id="follow-count">([[${followCount}]])</span></li></a>
+                    <a th:href="@{/visit_trace}"><li><i class="fa fa-eye"></i> 访问记录<span id="record-count">([[${visitTraceCount}]])</span></li></a>
+                    <a th:href="@{/notice}"><li><i class="fa fa-envelope-o"></i> 系统通知<span id="notice-count">([[${noticeCount}]])</span></li></a>
+                </ul>
+                <!--广告栏-->
+                <ul class="match_box">
+                    <li><h4>猜你喜欢</h4></li>
+                    <hr/>
+                    <li th:each="star:${stars}">
+                        <div class="jobs-item with-thumb">
+                            <div class="thumb_top">
+                                <div class="thumb">
+                                    <a th:href="@{'/profile/'+${star.id}}">
+                                        <img th:src="@{/file(path=${star.photo})}" style="width: 70px;height: 70px;" class="img-responsive"/>
+                                    </a>
+                                </div>
+                                <div class="jobs_right">
+                                    <a th:href="@{'/profile/'+${star.id}}"><h5 th:text="${star.nickname}"></h5></a>
+                                    <p th:inline="text">[[${star.age}]]岁&nbsp;[[${star.education}]]</p>
+                                    <span th:text="${star.workplace}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <hr/>
+
+                    <li><a th:href="@{/search}" class="photo_view center-block "
+                           style="color: white;text-align: center">想查看更多吗</a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+
+</body>
+</html>	

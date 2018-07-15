@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hpe.findlover.mapper.SuccessStoryMapper" >
+  <resultMap id="BaseResultMap" type="com.hpe.findlover.model.SuccessStory" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="left_user" property="leftUser" jdbcType="INTEGER" />
+    <result column="right_user" property="rightUser" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="success_time" property="successTime" jdbcType="TIMESTAMP" />
+    <result column="like_count" property="likeCount" jdbcType="INTEGER" />
+    <result column="reply_count" property="replyCount" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="brief" property="brief" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hpe.findlover.model.SuccessStory" extends="BaseResultMap" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, left_user, right_user, title, content,success_time, like_count, reply_count, status,
+    admin_id,brief,photo
+  </sql>
+  <sql id="Blob_Column_List" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    content
+  </sql>
+  <select id="selectByKeywordAndStatus" resultType="SuccessStory">
+    SELECT * FROM success_story
+    WHERE ${arg0} LIKE #{arg1} AND status=#{arg2}
+  </select>
+  <select id="selectByKeyword" resultType="SuccessStory">
+    SELECT * FROM success_story
+    WHERE ${arg0} LIKE #{arg1}
+  </select>
+  <select id="selectAllByStatus" resultType="SuccessStory">
+    SELECT  * FROM success_story WHERE  status=1 ORDER BY success_time DESC ;
+  </select>
+
+
+  <!-- 光荣脱单榜结果映射 -->
+  <resultMap id="notSingleResultMap" type="com.hpe.findlover.model.SuccessStory" extends="BaseResultMap">
+    <result column="uid" property="userLeft.id"></result>
+    <result column="reg_time" property="userLeft.regTime"></result>
+    <result column="nickname" property="userLeft.nickname"></result>
+    <result column="photo" property="userLeft.photo"></result>
+  </resultMap>
+  
+  <select id="selectNotSingle" resultMap="notSingleResultMap">
+    SELECT st.id, st.left_user, st.success_time,ub.id AS uid,ub.nickname,ub.reg_time,ub.photo
+    FROM success_story AS st LEFT OUTER JOIN user_basic AS ub
+    ON st.left_user = ub.id WHERE st.status=1 ORDER BY st.success_time DESC LIMIT 32
+  </select>
+
+  <select id="checkUser" resultType="successStory">
+    SELECT * FROM  findlover.success_story
+    WHERE left_user = #{right}
+    OR (right_user = #{right} AND left_user!=#{left} AND status !=2)
+  </select>
+</mapper>

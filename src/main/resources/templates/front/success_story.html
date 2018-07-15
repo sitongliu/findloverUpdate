@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <!--公共css与js文件-->
+    <th:block th:include="front/common/common_resource::resources"/>
+    <script th:src="@{/js/front/success_story.js}"></script>
+    <script th:src="@{/js/masonry-docs.min.js}"></script>
+</head>
+<body>
+<th:block th:include="front/common/header::nav"/>
+<div class="grid_2">
+    <div class="container">
+        <h2 style="margin: 50px">成功故事</h2>
+        <div class="heart-divider">
+            <span class="grey-line"></span>
+            <i class="fa fa-heart pink-heart"></i>
+            <i class="fa fa-heart grey-heart"></i>
+            <span class="grey-line"></span>
+        </div>
+        <div class="text-right">
+            <a style="margin: 30px; width: 300px; border-radius: 8px" th:href="@{/success_story/write_story}"
+            class=" button button-3d  button-caution">已经脱单了？发表成功故事吧</a>
+        </div>
+        <!--===========================================================================-->
+        <div class=" suceess_story">
+            <div id="masonry" class="container-fluid">
+                <th:block th:each="successStory,iterStat:${list}">
+                    <div class="box paid_people-left">
+                        <ul class="profile_item">
+                            <a th:href="@{'/success_story/success_story_info/'+${successStory.id}}">
+                                <li class="profile_left-top" style="padding: 0px">
+                                    <img width="320" height="auto" th:src="@{/file(path=${successStory.photo})}" class="img-responsive"
+                                         alt=""/>
+                                </li>
+                                <li class="profile_item-desc">
+                                    <div class="suceess_story-date">
+                                        <span class="entry-1" th:text="${#dates.format(successStory.successTime,'yyyy-MM-dd')}"></span>
+                                    </div>
+                                    <div class="suceess_story-content-info">
+                                        <h4><a th:href="@{'/success_story/success_story_info/'+${successStory.id}}" th:text="${successStory.leftUser+' & '+successStory.rightUser}"></a></h4>
+                                        <p th:text="${successStory.brief}">
+                                        </p>
+                                    </div>
+                                    <div class="text-left"><a th:href="@{'/success_story/success_story_info/'+${successStory.id}}"
+                                                               class="fa fa-heart grey-heart btn btn-default"
+                                                               style="font-size: 15px;margin-left: 5px;">围观幸福</a></div>
+                                </li>
+                                <div class="clearfix"></div>
+                            </a>
+                        </ul>
+                    </div>
+                </th:block>
+            </div>
+            <div class="col-sm-12" th:if="${list.total gt 8}">
+                <br/>
+                <button id="loadmore" type="button" class="btn btn-danger btn-lg btn-block">加载更多...
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--页面尾部-->
+<th:block th:include="front/common/footer::foot"/>
+
+</body>
+</html>	
